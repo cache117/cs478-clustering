@@ -2,6 +2,7 @@ package edu.byu.cstaheli.cs478.clustering;
 
 import edu.byu.cstaheli.cs478.toolkit.learner.UnsupervisedLearner;
 import edu.byu.cstaheli.cs478.toolkit.utility.Matrix;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -20,43 +21,88 @@ public class KMeans extends UnsupervisedLearner
         this.random = random;
     }
 
-    private ArrayList<Cluster> populateCentroids(Matrix dataset)
+    @NotNull
+    private ArrayList<Cluster> populateInitialCentroids(Matrix dataset)
     {
         Map<Integer, Cluster> centroids = new HashMap<>(k);
         for (int i = 0; i < k; ++i)
         {
-            int row;
-            while (true)
-            {
-                row = getRandomRow(dataset.rows());
-                if (rowAlreadyChosen(row))
-                {
-                    break;
-                }
-            }
+            int row = getNewRandomRow(dataset);
             double[] centroid = dataset.row(row);
             centroids.put(row, new Cluster(centroid, dataset));
         }
         return new ArrayList<>(centroids.values());
     }
 
-    @Override
-    public void train(Matrix dataset)
+    private int getNewRandomRow(Matrix dataset)
     {
-        clusters = populateCentroids(dataset);
-        for (int i = 0; i < dataset.rows(); ++i)
+        int row;
+        do
         {
-            for (Cluster cluster : clusters)
-            {
-                double distance = cluster.calcDistance(dataset.row(i));
-            }
-        }
+            row = getRandomRow(dataset.rows());
+        } while (rowAlreadyChosen(row));
+        return row;
     }
 
     @Override
-    public void predict(double[] row, double[] label)
+    public void cluster(Matrix dataset)
     {
+        clusters = populateInitialCentroids(dataset);
+        boolean keepTraining;
+        do
+        {
+            clearClusters();
+            addRowsToClusters(dataset);
+            calculateNewCentroids();
+            keepTraining = shouldKeepTraining();
+        } while (keepTraining);
+    }
 
+    private void clearClusters()
+    {
+        for (Cluster cluster : clusters)
+        {
+            cluster.clear();
+        }
+    }
+
+    private void addRowsToClusters(Matrix dataset)
+    {
+        for (int i = 0; i < dataset.rows(); ++i)
+        {
+            double[] row = dataset.row(i);
+            Cluster bestCluster = getBestClusterForRow(row);
+            bestCluster.add(row);
+        }
+    }
+
+    private Cluster getBestClusterForRow(double[] row)
+    {
+        double bestDistance = Double.MAX_VALUE;
+        Cluster bestCluster = clusters.get(0);
+        for (Cluster cluster : clusters)
+        {
+            double distance = cluster.calcDistance(row);
+            if (distance < bestDistance)
+            {
+                bestDistance = distance;
+                bestCluster = cluster;
+            }
+        }
+        return bestCluster;
+    }
+
+    private void calculateNewCentroids()
+    {
+        for (Cluster cluster : clusters)
+        {
+            cluster.calculateNewCentroid();
+        }
+    }
+
+    private boolean shouldKeepTraining()
+    {
+        return false;
     }
 
     public int getK()
@@ -78,5 +124,21 @@ public class KMeans extends UnsupervisedLearner
     private int getRandomRow(int rows)
     {
         return random.nextInt(rows);
+    }
+
+    private double silhouetteMetric(double ai, double bi)
+    {
+        if (Double.compare(ai, bi) == -1)
+        {
+            return 1 - (ai / bi);
+        }
+        else if (Double.compare(ai, bi) == 0)
+        {
+            return 0;
+        }
+        else
+        {
+            return (bi / ai) - 1;
+        }
     }
 }

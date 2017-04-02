@@ -69,15 +69,25 @@ public class Cluster
         return Double.compare(value, Matrix.MISSING) == 0;
     }
 
-    public void calculateNewCentroid()
+    public void clear()
     {
-        this.centroid = calcCentroidAverage();
+        rows.clear();
     }
 
-    private double[] calcCentroidAverage()
+    public void add(double[] row)
+    {
+        rows.add(row);
+    }
+
+    public void calculateNewCentroid()
+    {
+        this.centroid = calcAverageCentroid();
+    }
+
+    private double[] calcAverageCentroid()
     {
         double[] centroid = new double[this.centroid.length];
-        for (int i = 0; i < centroid.length; ++i)
+        for (int i = 0; i < this.centroid.length; ++i)
         {
             centroid[i] = calcColumnAverage(i);
         }
@@ -100,16 +110,11 @@ public class Cluster
     private double calculateArrayAverage(double[] columnValues)
     {
         double sum = 0;
-        int count = 0;
         for (double value : columnValues)
         {
-            if (!isValueUnknown(value))
-            {
-                sum += value;
-                ++count;
-            }
+            sum += value;
         }
-        return sum / count;
+        return sum / columnValues.length;
     }
 
     private double calculateArrayMedian(double[] columnValues)
@@ -127,18 +132,28 @@ public class Cluster
         return median;
     }
 
+    /**
+     * Adds all of the values in the cluster from the specified column to an array. This doesn't add missing values
+     *
+     * @param column the column to take from.
+     * @return the values in the column
+     */
     private double[] getColumnValues(int column)
     {
         double[] columnValues = new double[rows.size()];
         for (int i = 0; i < rows.size(); ++i)
         {
-            columnValues[i] = get(i, column);
+            double value = get(i, column);
+            if (!isValueUnknown(value))
+            {
+                columnValues[i] = value;
+            }
         }
         return columnValues;
     }
 
-    private double get(int row, int column)
+    private double get(int rowNumber, int column)
     {
-        return rows.get(row)[column];
+        return rows.get(rowNumber)[column];
     }
 }
