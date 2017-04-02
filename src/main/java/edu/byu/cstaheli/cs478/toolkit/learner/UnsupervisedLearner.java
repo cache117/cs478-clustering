@@ -8,4 +8,6 @@ import edu.byu.cstaheli.cs478.toolkit.utility.Matrix;
 public abstract class UnsupervisedLearner
 {
     public abstract void train(Matrix dataset);
+
+    public abstract void predict(double[] row, double[] label);
 }

@@ -41,4 +41,14 @@ public class Utility
     {
         return row[row.length - 1];
     }
+
+    public static double euclideanDistance(double x, double y)
+    {
+        return Math.sqrt(squaredDistance(x, y));
+    }
+
+    public static double squaredDistance(double first, double second)
+    {
+        return square(first - second);
+    }
 }

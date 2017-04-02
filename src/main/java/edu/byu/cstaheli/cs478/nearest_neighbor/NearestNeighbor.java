@@ -8,7 +8,8 @@ import edu.byu.cstaheli.cs478.toolkit.utility.Matrix;
 import java.io.FileWriter;
 import java.util.Map;
 
-import static edu.byu.cstaheli.cs478.toolkit.utility.Utility.square;
+import static edu.byu.cstaheli.cs478.toolkit.utility.Utility.euclideanDistance;
+import static edu.byu.cstaheli.cs478.toolkit.utility.Utility.squaredDistance;
 
 /**
  * Created by cstaheli on 3/14/2017.
@@ -24,16 +25,6 @@ public class NearestNeighbor extends SupervisedLearner
     {
         this.numberOfNeighborsToCompareTo = 3;
         useDistanceWeighting = false;
-    }
-
-    protected static double euclideanDistance(double x, double y)
-    {
-        return Math.sqrt(squaredDistance(x, y));
-    }
-
-    protected static double squaredDistance(double first, double second)
-    {
-        return square(first - second);
     }
 
     @Override
