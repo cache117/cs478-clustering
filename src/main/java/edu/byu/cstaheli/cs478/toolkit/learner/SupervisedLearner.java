@@ -7,9 +7,8 @@ package edu.byu.cstaheli.cs478.toolkit.learner;
 import edu.byu.cstaheli.cs478.toolkit.strategy.LearningStrategy;
 import edu.byu.cstaheli.cs478.toolkit.utility.Matrix;
 
-public abstract class SupervisedLearner
+public abstract class SupervisedLearner extends Learner
 {
-    private String outputFile;
 
     protected SupervisedLearner()
     {
@@ -125,18 +124,4 @@ public abstract class SupervisedLearner
         return (expected - actual) * (expected - actual);
     }
 
-    protected boolean shouldOutput()
-    {
-        return (getOutputFile() != null);
-    }
-
-    protected String getOutputFile()
-    {
-        return outputFile;
-    }
-
-    public void setOutputFile(String outputFile)
-    {
-        this.outputFile = outputFile;
-    }
 }
