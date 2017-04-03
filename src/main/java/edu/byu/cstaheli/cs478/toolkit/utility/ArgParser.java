@@ -57,6 +57,9 @@ public class ArgParser
                                 break;
                             case "training":
                                 break;
+                            case "cluster":
+                                evalExtra = argv[++i];
+                                break;
                             default:
                                 System.out.println("Invalid Evaluation Method: " + argv[i]);
                                 System.exit(0);
