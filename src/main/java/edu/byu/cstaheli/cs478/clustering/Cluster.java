@@ -24,6 +24,28 @@ public class Cluster
         continuousColumn = populateContinuousColumnIndicators(dataset);
     }
 
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Cluster cluster = (Cluster) o;
+
+        if (!rows.equals(cluster.rows)) return false;
+        if (!Arrays.equals(centroid, cluster.centroid)) return false;
+        return continuousColumn.equals(cluster.continuousColumn);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = rows.hashCode();
+        result = 31 * result + Arrays.hashCode(centroid);
+        result = 31 * result + continuousColumn.hashCode();
+        return result;
+    }
+
     private List<Boolean> populateContinuousColumnIndicators(Matrix dataset)
     {
         List<Boolean> continuousColumnIndicators = new ArrayList<>(dataset.cols());
@@ -40,25 +62,30 @@ public class Cluster
         return continuousColumn.get(column);
     }
 
-    public double calcDistance(double[] row)
+    public double calcDistanceFromCentroid(double[] row)
     {
-        assert row.length == continuousColumn.size();
+        return calcDistance(row, centroid);
+    }
+
+    public double calcDistance(double[] first, double[] second)
+    {
+        assert first.length == second.length;
         double distance = 0;
-        for (int i = 0; i < row.length; ++i)
+        for (int i = 0; i < first.length; ++i)
         {
-            double centroidColumn = centroid[i];
-            double rowColumn = row[i];
+            double firstValue = first[i];
+            double secondValue = second[i];
             if (isColumnContinuous(i))
             {
-                distance += Double.compare(centroidColumn, rowColumn) == 0 ? 0 : 1;
+                distance += Double.compare(secondValue, firstValue) == 0 ? 0 : 1;
             }
-            else if (isValueUnknown(rowColumn))
+            else if (isValueUnknown(firstValue))
             {
                 distance += 1;
             }
             else
             {
-                distance += euclideanDistance(centroidColumn, rowColumn);
+                distance += euclideanDistance(secondValue, firstValue);
             }
         }
         return distance;
@@ -155,5 +182,38 @@ public class Cluster
     private double get(int rowNumber, int column)
     {
         return rows.get(rowNumber)[column];
+    }
+
+    public double calculateAverageInternalDissimilarity()
+    {
+        return calculateAverageDissimilarity(rows, rows);
+    }
+
+    public double calculateAverageExternalDissimilarity(Cluster other)
+    {
+        return calculateAverageDissimilarity(rows, other.rows);
+    }
+
+    private double calculateAverageDissimilarity(List<double[]> first, List<double[]> second)
+    {
+        double sum = 0;
+        double count = 0;
+        for (int i = 0; i < first.size(); ++i)
+        {
+            for (int j = 0; j < second.size(); ++j)
+            {
+                if (i != j)
+                {
+                    sum += calcDistance(first.get(i), second.get(j));
+                    ++count;
+                }
+            }
+        }
+        return sum / count;
+    }
+
+    public double[] getCentroid()
+    {
+        return centroid;
     }
 }
