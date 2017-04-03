@@ -8,11 +8,15 @@ import org.junit.jupiter.api.Test;
  */
 class KMeansTest
 {
-    @Test
-    void cluster()
-    {
-        MLSystemManager manager = new MLSystemManager();
+    private static String datasetsLocation = "src/test/resources/datasets/clustering/";
 
+    @Test
+    void cluster() throws Exception
+    {
+        String[] args;
+        MLSystemManager manager = new MLSystemManager();
+        args = ("-L kmeans -A " + datasetsLocation + "labor_data.arff -E cluster 3 -V").split(" ");
+        manager.run(args);
     }
 
 }

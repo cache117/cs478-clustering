@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 
 import static edu.byu.cstaheli.cs478.other.Other.assertNumbersEqualWithEpsilon;
+import static edu.byu.cstaheli.cs478.toolkit.utility.Utility.squaredDistance;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -55,7 +56,7 @@ class NearestNeighborTest
     {
         double first = 0;
         double second = 1;
-        double result = NearestNeighbor.squaredDistance(first, second);
+        double result = squaredDistance(first, second);
         assertNumbersEqualWithEpsilon(1, result, .00001);
     }
 

@@ -90,7 +90,11 @@ public class MLSystemManager
         }
         else if (learner instanceof UnsupervisedLearner)
         {
-            calcClustering((UnsupervisedLearner) learner, learnerData);
+            ((UnsupervisedLearner) learner).setIsVerbose(parser.isVerbose());
+            if (parser.getEvaluation().equals("cluster"))
+            {
+                calcClustering((UnsupervisedLearner) learner, learnerData);
+            }
         }
     }
 
