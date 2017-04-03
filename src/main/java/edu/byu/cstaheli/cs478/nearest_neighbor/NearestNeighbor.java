@@ -1,7 +1,7 @@
 package edu.byu.cstaheli.cs478.nearest_neighbor;
 
 import edu.byu.cstaheli.cs478.toolkit.exception.MatrixException;
-import edu.byu.cstaheli.cs478.toolkit.learner.SupervisedLearner;
+import edu.byu.cstaheli.cs478.toolkit.learner.supervised.SupervisedLearner;
 import edu.byu.cstaheli.cs478.toolkit.strategy.LearningStrategy;
 import edu.byu.cstaheli.cs478.toolkit.utility.Matrix;
 

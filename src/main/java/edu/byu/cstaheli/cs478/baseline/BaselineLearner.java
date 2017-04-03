@@ -4,7 +4,7 @@ package edu.byu.cstaheli.cs478.baseline;
 // See http://creativecommons.org/publicdomain/zero/1.0/
 // ----------------------------------------------------------------
 
-import edu.byu.cstaheli.cs478.toolkit.learner.SupervisedLearner;
+import edu.byu.cstaheli.cs478.toolkit.learner.supervised.SupervisedLearner;
 import edu.byu.cstaheli.cs478.toolkit.strategy.LearningStrategy;
 import edu.byu.cstaheli.cs478.toolkit.utility.Matrix;
 

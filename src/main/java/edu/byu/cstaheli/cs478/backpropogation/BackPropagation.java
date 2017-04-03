@@ -1,6 +1,6 @@
 package edu.byu.cstaheli.cs478.backpropogation;
 
-import edu.byu.cstaheli.cs478.toolkit.learner.EpochLearner;
+import edu.byu.cstaheli.cs478.toolkit.learner.supervised.EpochLearner;
 import edu.byu.cstaheli.cs478.toolkit.strategy.LearningStrategy;
 
 import java.util.ArrayList;

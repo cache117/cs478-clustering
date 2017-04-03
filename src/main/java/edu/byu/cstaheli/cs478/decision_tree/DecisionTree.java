@@ -4,7 +4,7 @@ import edu.byu.cstaheli.cs478.decision_tree.node.FeatureNode;
 import edu.byu.cstaheli.cs478.decision_tree.node.LeafNode;
 import edu.byu.cstaheli.cs478.decision_tree.node.Node;
 import edu.byu.cstaheli.cs478.toolkit.exception.MatrixException;
-import edu.byu.cstaheli.cs478.toolkit.learner.SupervisedLearner;
+import edu.byu.cstaheli.cs478.toolkit.learner.supervised.SupervisedLearner;
 import edu.byu.cstaheli.cs478.toolkit.strategy.LearningStrategy;
 import edu.byu.cstaheli.cs478.toolkit.utility.Matrix;
 

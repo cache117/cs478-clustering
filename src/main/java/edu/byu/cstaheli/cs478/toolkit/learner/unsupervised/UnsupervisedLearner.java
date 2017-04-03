@@ -1,5 +1,6 @@
-package edu.byu.cstaheli.cs478.toolkit.learner;
+package edu.byu.cstaheli.cs478.toolkit.learner.unsupervised;
 
+import edu.byu.cstaheli.cs478.toolkit.learner.Learner;
 import edu.byu.cstaheli.cs478.toolkit.utility.Matrix;
 
 /**

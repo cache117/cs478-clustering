@@ -1,4 +1,4 @@
-package edu.byu.cstaheli.cs478.toolkit.learner;
+package edu.byu.cstaheli.cs478.toolkit.learner.supervised;
 
 import edu.byu.cstaheli.cs478.toolkit.utility.RandomWeightGenerator;
 

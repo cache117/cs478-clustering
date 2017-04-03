@@ -1,5 +1,6 @@
 package edu.byu.cstaheli.cs478.clustering;
 
+import edu.byu.cstaheli.cs478.toolkit.MLSystemManager;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -10,6 +11,8 @@ class KMeansTest
     @Test
     void cluster()
     {
+        MLSystemManager manager = new MLSystemManager();
+
     }
 
 }

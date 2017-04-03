@@ -1,9 +1,10 @@
-package edu.byu.cstaheli.cs478.toolkit.learner;
+package edu.byu.cstaheli.cs478.toolkit.learner.supervised;
 // ----------------------------------------------------------------
 // The contents of this file are distributed under the CC0 license.
 // See http://creativecommons.org/publicdomain/zero/1.0/
 // ----------------------------------------------------------------
 
+import edu.byu.cstaheli.cs478.toolkit.learner.Learner;
 import edu.byu.cstaheli.cs478.toolkit.strategy.LearningStrategy;
 import edu.byu.cstaheli.cs478.toolkit.utility.Matrix;
 

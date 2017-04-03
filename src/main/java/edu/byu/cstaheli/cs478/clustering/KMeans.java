@@ -1,6 +1,6 @@
 package edu.byu.cstaheli.cs478.clustering;
 
-import edu.byu.cstaheli.cs478.toolkit.learner.UnsupervisedLearner;
+import edu.byu.cstaheli.cs478.toolkit.learner.unsupervised.UnsupervisedLearner;
 import edu.byu.cstaheli.cs478.toolkit.utility.Matrix;
 import org.jetbrains.annotations.NotNull;
 
