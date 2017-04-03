@@ -2,26 +2,28 @@ package edu.byu.cstaheli.cs478.clustering;
 
 import edu.byu.cstaheli.cs478.toolkit.utility.Matrix;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.util.*;
 
 import static edu.byu.cstaheli.cs478.toolkit.utility.Utility.euclideanDistance;
 
 /**
- * Created by cstaheli on 4/1/2017.
+ * Represents a Cluster in a clustering, unsupervised algorithm, such as k-means or HAC.
  */
 public class Cluster
 {
     private List<double[]> rows;
     private double[] centroid;
     private List<Boolean> continuousColumn;
+    private List<Map<Integer, String>> stringRepresentations;
 
     public Cluster(double[] centroid, Matrix dataset)
     {
         this.centroid = centroid;
         rows = new ArrayList<>();
         continuousColumn = populateContinuousColumnIndicators(dataset);
+        stringRepresentations = dataset.getStringRepresentations();
     }
 
     @Override
@@ -51,7 +53,7 @@ public class Cluster
         List<Boolean> continuousColumnIndicators = new ArrayList<>(dataset.cols());
         for (int i = 0; i < dataset.cols(); ++i)
         {
-            boolean indicator = dataset.valueCount(i) != 0;
+            boolean indicator = dataset.valueCount(i) == 0;
             continuousColumnIndicators.add(indicator);
         }
         return continuousColumnIndicators;
@@ -77,15 +79,15 @@ public class Cluster
             double secondValue = second[i];
             if (isColumnContinuous(i))
             {
-                distance += Double.compare(secondValue, firstValue) == 0 ? 0 : 1;
+                distance += Double.compare(firstValue, secondValue) == 0 ? 0 : 1;
             }
-            else if (isValueUnknown(firstValue))
+            else if (isValueUnknown(firstValue) || isValueUnknown(secondValue))
             {
                 distance += 1;
             }
             else
             {
-                distance += euclideanDistance(secondValue, firstValue);
+                distance += euclideanDistance(firstValue, secondValue);
             }
         }
         return distance;
@@ -215,5 +217,29 @@ public class Cluster
     public double[] getCentroid()
     {
         return centroid;
+    }
+
+    public String getCentroidString()
+    {
+        StringJoiner joiner = new StringJoiner(",\t");
+        for (int i = 0; i < centroid.length; i++)
+        {
+            double value = centroid[i];
+            if (Double.compare(value, Matrix.MISSING) == 0)
+            {
+                joiner.add("?");
+            }
+            else if (!isColumnContinuous(i))
+            {
+                joiner.add(stringRepresentations.get(i).get((int) value));
+            }
+            else
+            {
+                DecimalFormat format = new DecimalFormat("#.###");
+                format.setRoundingMode(RoundingMode.HALF_UP);
+                joiner.add(format.format(value));
+            }
+        }
+        return joiner.toString();
     }
 }

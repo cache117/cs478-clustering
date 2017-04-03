@@ -22,7 +22,7 @@ import static edu.byu.cstaheli.cs478.toolkit.utility.Utility.square;
 public class Matrix
 {
     /**
-     * Representation of missing values in the dataset
+     * Representation of missing values in the dataset (?)
      */
     public static double MISSING = Double.MAX_VALUE;
 
@@ -111,6 +111,11 @@ public class Matrix
     private static double zScore(double value, double mean, double standardDeviation)
     {
         return (value - mean) / standardDeviation;
+    }
+
+    public List<Map<Integer, String>> getStringRepresentations()
+    {
+        return Collections.unmodifiableList(m_enum_to_str);
     }
 
     /**
@@ -457,15 +462,7 @@ public class Matrix
             double v = get(i, col);
             if (v != MISSING || binRealValues)
             {
-                Integer count = occurrences.get(v);
-                if (count == null)
-                {
-                    occurrences.put(v, 1);
-                }
-                else
-                {
-                    occurrences.put(v, count + 1);
-                }
+                occurrences.merge(v, 1, (a, b) -> a + b);
             }
         }
         return occurrences;
@@ -658,7 +655,7 @@ public class Matrix
      * @param columnClass the index of the column in question
      * @param value       the value to match against
      * @return a matrix with only matching rows.
-     * @throws MatrixException
+     * @throws MatrixException when something is wrong with the Matrix
      */
     public Matrix getRowsWithColumnClass(int columnClass, double value) throws MatrixException
     {

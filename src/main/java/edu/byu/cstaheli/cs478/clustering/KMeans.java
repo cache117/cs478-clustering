@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 /**
- * Created by cstaheli on 4/1/2017.
+ * Implements k-means clustering.
  */
 public class KMeans extends UnsupervisedLearner
 {
@@ -15,12 +15,14 @@ public class KMeans extends UnsupervisedLearner
     private Random random;
     private List<Cluster> clusters;
     private double bestSilhouetteMetric;
+    private int timesSilhouetteDecreased;
 
     public KMeans(int k, Random random)
     {
         this.k = k;
         this.random = random;
         bestSilhouetteMetric = 0;
+        clusters = new ArrayList<>(0);
     }
 
     @NotNull
@@ -29,21 +31,11 @@ public class KMeans extends UnsupervisedLearner
         Map<Integer, Cluster> centroids = new HashMap<>(k);
         for (int i = 0; i < k; ++i)
         {
-            int row = getNewRandomRow(dataset);
+            int row = getRandomRow(dataset.rows());
             double[] centroid = dataset.row(row);
             centroids.put(row, new Cluster(centroid, dataset));
         }
         return new ArrayList<>(centroids.values());
-    }
-
-    private int getNewRandomRow(Matrix dataset)
-    {
-        int row;
-        do
-        {
-            row = getRandomRow(dataset.rows());
-        } while (rowAlreadyChosen(row));
-        return row;
     }
 
     @Override
@@ -67,7 +59,7 @@ public class KMeans extends UnsupervisedLearner
 
     private void printSilhouetteInfo()
     {
-        System.out.printf("Silhouette : %s\n", bestSilhouetteMetric);
+        System.out.printf("\nSilhouette : %s\n", bestSilhouetteMetric);
     }
 
     private void printCentroids()
@@ -77,18 +69,9 @@ public class KMeans extends UnsupervisedLearner
         for (Cluster cluster : clusters)
         {
             System.out.printf("Centroid %s = ", counter);
-            printRow(cluster.getCentroid());
+            System.out.println(cluster.getCentroidString());
+            ++counter;
         }
-    }
-
-    private void printRow(double[] row)
-    {
-        StringJoiner joiner = new StringJoiner(",\t");
-        for (double value : row)
-        {
-            joiner.add(String.valueOf(value));
-        }
-        System.out.println(joiner.toString());
     }
 
     private void printIterationHeader(int count)
@@ -160,7 +143,7 @@ public class KMeans extends UnsupervisedLearner
         for (Cluster cluster : clusters)
         {
             double internalDissimilarity = cluster.calculateAverageInternalDissimilarity();
-            double externalDissimilarity = 0;
+            double externalDissimilarity = Double.MAX_VALUE;
             for (Cluster otherCluster : clusters)
             {
                 if (!cluster.equals(otherCluster))
@@ -174,7 +157,19 @@ public class KMeans extends UnsupervisedLearner
             }
             silhouetteMetric += silhouetteMetric(internalDissimilarity, externalDissimilarity);
         }
-        return silhouetteMetric > bestSilhouetteMetric;
+        double difference = Math.abs(silhouetteMetric - bestSilhouetteMetric);
+        if (silhouetteMetric > bestSilhouetteMetric)
+        {
+            bestSilhouetteMetric = silhouetteMetric;
+        }
+        else
+        {
+            if (++timesSilhouetteDecreased > 2)
+            {
+                return false;
+            }
+        }
+        return difference > .00001;
     }
 
     public int getK()
@@ -185,12 +180,6 @@ public class KMeans extends UnsupervisedLearner
     public void setK(int k)
     {
         this.k = k;
-    }
-
-    private boolean rowAlreadyChosen(int row)
-    {
-        Cluster cluster = this.clusters.get(row);
-        return cluster == null;
     }
 
     private int getRandomRow(int rows)
