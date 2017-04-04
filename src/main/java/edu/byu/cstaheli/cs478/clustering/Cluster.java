@@ -254,4 +254,14 @@ public class Cluster
         }
         return joiner.toString();
     }
+
+    public int size()
+    {
+        return rows.size();
+    }
+
+    public boolean empty()
+    {
+        return size() == 0;
+    }
 }

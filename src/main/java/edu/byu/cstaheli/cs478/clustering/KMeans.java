@@ -4,7 +4,10 @@ import edu.byu.cstaheli.cs478.toolkit.learner.unsupervised.UnsupervisedLearner;
 import edu.byu.cstaheli.cs478.toolkit.utility.Matrix;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Random;
 
 /**
  * Implements k-means clustering.
@@ -17,6 +20,7 @@ public class KMeans extends UnsupervisedLearner
     private double bestSilhouetteMetric;
     private int timesSilhouetteDecreased;
     private boolean useLastColumnOfDataset;
+    private boolean useFirstColumnOfDataset;
 
     public KMeans(int k, Random random)
     {
@@ -28,35 +32,68 @@ public class KMeans extends UnsupervisedLearner
     }
 
     @NotNull
-    private ArrayList<Cluster> populateInitialCentroids(Matrix dataset)
+    private List<Cluster> populateInitialCentroids(Matrix dataset)
     {
-        Map<Integer, Cluster> centroids = new HashMap<>(k);
+        List<Cluster> centroids = new ArrayList<>(k);
         for (int i = 0; i < k; ++i)
         {
-            int row = getRandomRow(dataset.rows());
-            double[] centroid = dataset.row(row);
-            centroids.put(row, new Cluster(centroid, dataset));
+            Cluster newCluster = getRandomCentroid(dataset);
+            centroids.add(newCluster);
         }
-        return new ArrayList<>(centroids.values());
+        return centroids;
+    }
+
+    @NotNull
+    private Cluster getRandomCentroid(Matrix dataset)
+    {
+        int row = getRandomRow(dataset.rows());
+        double[] centroid = dataset.row(row);
+        return new Cluster(centroid, dataset);
     }
 
     @Override
     public void cluster(Matrix dataset)
     {
+        if (!useLastColumnOfDataset)
+        {
+            dataset = new Matrix(dataset, 0, 0, dataset.rows(), dataset.cols() - 1);
+        }
+        if (!useFirstColumnOfDataset)
+        {
+            dataset = new Matrix(dataset, 0, 1, dataset.rows(), dataset.cols() - 1);
+        }
         clusters = populateInitialCentroids(dataset);
         boolean keepTraining;
-        int count = 0;
+        int counter = 0;
         do
         {
-            ++count;
-            printIterationHeader(count);
+            ++counter;
+            printIterationHeader(counter);
             printCentroids();
             clearClusters();
             addRowsToClusters(dataset);
+            fixEmptyClusters(dataset);
             calculateNewCentroids();
             keepTraining = shouldKeepTraining();
             printSilhouetteInfo();
         } while (keepTraining);
+    }
+
+    private void fixEmptyClusters(Matrix dataset)
+    {
+        for (ListIterator<Cluster> iterator = clusters.listIterator(); iterator.hasNext(); )
+        {
+            Cluster cluster = iterator.next();
+            if (cluster.empty())
+            {
+                iterator.remove();
+                Cluster randomCentroid = getRandomCentroid(dataset);
+                iterator.add(randomCentroid);
+                clearClusters();
+                addRowsToClusters(dataset);
+                iterator = clusters.listIterator();
+            }
+        }
     }
 
     private void printSilhouetteInfo()
@@ -213,5 +250,15 @@ public class KMeans extends UnsupervisedLearner
     public void setUseLastColumnOfDataset(boolean useLastColumnOfDataset)
     {
         this.useLastColumnOfDataset = useLastColumnOfDataset;
+    }
+
+    public boolean shouldUseFirstColumnOfDataset()
+    {
+        return useFirstColumnOfDataset;
+    }
+
+    public void setUseFirstColumnOfDataset(boolean useFirstColumnOfDataset)
+    {
+        this.useFirstColumnOfDataset = useFirstColumnOfDataset;
     }
 }
