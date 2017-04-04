@@ -16,6 +16,7 @@ public class KMeans extends UnsupervisedLearner
     private List<Cluster> clusters;
     private double bestSilhouetteMetric;
     private int timesSilhouetteDecreased;
+    private boolean useLastColumnOfDataset;
 
     public KMeans(int k, Random random)
     {
@@ -23,6 +24,7 @@ public class KMeans extends UnsupervisedLearner
         this.random = random;
         bestSilhouetteMetric = 0;
         clusters = new ArrayList<>(0);
+        useLastColumnOfDataset = true;
     }
 
     @NotNull
@@ -201,5 +203,15 @@ public class KMeans extends UnsupervisedLearner
         {
             return (otherClusterDissimilarity / clusterDissimilarity) - 1;
         }
+    }
+
+    public boolean shouldUseLastColumnOfDataset()
+    {
+        return useLastColumnOfDataset;
+    }
+
+    public void setUseLastColumnOfDataset(boolean useLastColumnOfDataset)
+    {
+        this.useLastColumnOfDataset = useLastColumnOfDataset;
     }
 }
