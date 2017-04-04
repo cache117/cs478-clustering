@@ -27,6 +27,7 @@ public class MLSystemManager
     private Learner learner;
     private boolean binRealData;
     private boolean calcTrainingAccuracy;
+    private LearnerData learnerData;
 
     public MLSystemManager()
     {
@@ -67,24 +68,24 @@ public class MLSystemManager
             arffData.normalize();
         }
 
-        printStats(parser.getARFF(), parser.getLearner(), parser.getEvaluation(), arffData);
+        printStats(parser, arffData);
 
-        LearnerData learnerData = new LearnerData(getRandom(), parser, arffData);
+        learnerData = new LearnerData(getRandom(), parser, arffData);
         if (learner instanceof SupervisedLearner)
         {
             switch (parser.getEvaluation())
             {
                 case "training":
-                    calcTraining((SupervisedLearner) learner, learnerData);
+                    calcTraining((SupervisedLearner) learner);
                     break;
                 case "static":
-                    calcStatic((SupervisedLearner) learner, learnerData);
+                    calcStatic((SupervisedLearner) learner);
                     break;
                 case "random":
-                    calcRandom((SupervisedLearner) learner, learnerData);
+                    calcRandom((SupervisedLearner) learner);
                     break;
                 case "cross":
-                    calcCrossValidation((SupervisedLearner) learner, learnerData);
+                    calcCrossValidation((SupervisedLearner) learner);
                     break;
             }
         }
@@ -93,7 +94,7 @@ public class MLSystemManager
             ((UnsupervisedLearner) learner).setIsVerbose(parser.isVerbose());
             if (parser.getEvaluation().equals("cluster"))
             {
-                calcClustering((UnsupervisedLearner) learner, learnerData);
+                calcClustering((UnsupervisedLearner) learner);
             }
         }
     }
@@ -125,7 +126,7 @@ public class MLSystemManager
         }
     }
 
-    private void calcClustering(UnsupervisedLearner learner, LearnerData learnerData)
+    private void calcClustering(UnsupervisedLearner learner)
     {
         if (learnerData.isVerbose())
         {
@@ -135,7 +136,7 @@ public class MLSystemManager
         learner.cluster(data);
     }
 
-    private void calcTraining(SupervisedLearner learner, LearnerData learnerData) throws Exception
+    private void calcTraining(SupervisedLearner learner) throws Exception
     {
         System.out.println("Calculating accuracy on training set...");
         LearningStrategy strategy = new TrainingStrategy(learnerData);
@@ -158,7 +159,7 @@ public class MLSystemManager
         }
     }
 
-    private void calcStatic(SupervisedLearner learner, LearnerData learnerData) throws Exception
+    private void calcStatic(SupervisedLearner learner) throws Exception
     {
         LearningStrategy strategy = new StaticStrategy(learnerData);
         double startTime = System.currentTimeMillis();
@@ -199,7 +200,7 @@ public class MLSystemManager
         }
     }
 
-    private void calcRandom(SupervisedLearner learner, LearnerData learnerData) throws Exception
+    private void calcRandom(SupervisedLearner learner) throws Exception
     {
         LearningStrategy strategy = new RandomStrategy(learnerData);
         Matrix testFeatures = strategy.getTestingFeatures();
@@ -240,7 +241,7 @@ public class MLSystemManager
         }
     }
 
-    private void calcCrossValidation(SupervisedLearner learner, LearnerData learnerData) throws Exception
+    private void calcCrossValidation(SupervisedLearner learner) throws Exception
     {
         LearningStrategy strategy;
         System.out.println("Calculating accuracy using cross-validation...");
@@ -287,8 +288,11 @@ public class MLSystemManager
         }
     }
 
-    private void printStats(String fileName, String learnerName, String evalMethod, Matrix data)
+    private void printStats(ArgParser parser, Matrix data)
     {
+        String fileName = parser.getARFF();
+        String learnerName = parser.getLearner();
+        String evalMethod = parser.getEvaluation();
         // Print some stats
         System.out.println();
         System.out.println("Dataset name: " + fileName);
@@ -322,6 +326,11 @@ public class MLSystemManager
     public void setRandomSeed(long seed)
     {
         setRandom(new Random(seed));
+    }
+
+    public LearnerData getLearnerData()
+    {
+        return learnerData;
     }
 
     private String getArrayString(double[] array)

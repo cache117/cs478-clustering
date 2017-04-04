@@ -4,10 +4,13 @@ import edu.byu.cstaheli.cs478.toolkit.learner.unsupervised.UnsupervisedLearner;
 import edu.byu.cstaheli.cs478.toolkit.utility.Matrix;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Random;
+
+import static edu.byu.cstaheli.cs478.toolkit.utility.Utility.getFormattedDouble;
 
 /**
  * Implements k-means clustering.
@@ -47,6 +50,12 @@ public class KMeans extends UnsupervisedLearner
     private Cluster getRandomCentroid(Matrix dataset)
     {
         int row = getRandomRow(dataset.rows());
+        return getClusterFromRow(dataset, row);
+    }
+
+    @NotNull
+    public Cluster getClusterFromRow(Matrix dataset, int row)
+    {
         double[] centroid = dataset.row(row);
         return new Cluster(centroid, dataset);
     }
@@ -62,7 +71,10 @@ public class KMeans extends UnsupervisedLearner
         {
             dataset = new Matrix(dataset, 0, 1, dataset.rows(), dataset.cols() - 1);
         }
-        clusters = populateInitialCentroids(dataset);
+        if (clusters.size() == 0)
+        {
+            clusters = populateInitialCentroids(dataset);
+        }
         boolean keepTraining;
         int counter = 0;
         do
@@ -76,7 +88,51 @@ public class KMeans extends UnsupervisedLearner
             calculateNewCentroids();
             keepTraining = shouldKeepTraining();
             printSilhouetteInfo();
+            printSSE();
         } while (keepTraining);
+        printFinalStats();
+    }
+
+    private void printFinalStats()
+    {
+        if (shouldOutput())
+        {
+            try (FileWriter writer = new FileWriter(getOutputFile(), true))
+            {
+                writer.append(String.format("%s", clusters.size()));
+                for (Cluster cluster : clusters)
+                {
+                    writer.append(",,");
+                    writer.append(cluster.getCentroidString(","));
+                    writer.append(",,");
+                    writer.append(String.valueOf(cluster.size()));
+                    writer.append(",,");
+                    writer.append(getFormattedDouble(cluster.calcSSE()));
+                    writer.append(",,");
+                }
+                writer.append(getFormattedDouble(calculateTotalSSE()))
+                        .append("\n");
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void printSSE()
+    {
+        System.out.printf("SSE: %s", getFormattedDouble(calculateTotalSSE()));
+    }
+
+    private double calculateTotalSSE()
+    {
+        double value = 0;
+        for (Cluster cluster : clusters)
+        {
+            value += cluster.calcSSE();
+        }
+        return value;
     }
 
     private void fixEmptyClusters(Matrix dataset)
@@ -108,7 +164,7 @@ public class KMeans extends UnsupervisedLearner
         for (Cluster cluster : clusters)
         {
             System.out.printf("Centroid %s = ", counter);
-            System.out.println(cluster.getCentroidString());
+            System.out.println(cluster.getCentroidString(",\t"));
             ++counter;
         }
     }
@@ -149,7 +205,7 @@ public class KMeans extends UnsupervisedLearner
 
     private void printAssignment(int i, Cluster bestCluster)
     {
-        System.out.printf("%s = %s\t", i, clusters.indexOf(bestCluster));
+        System.out.printf("%s=%s ", i, clusters.indexOf(bestCluster));
     }
 
     private Cluster getBestClusterForRow(double[] row)
@@ -240,6 +296,11 @@ public class KMeans extends UnsupervisedLearner
         {
             return (otherClusterDissimilarity / clusterDissimilarity) - 1;
         }
+    }
+
+    public void setClusters(List<Cluster> clusters)
+    {
+        this.clusters = clusters;
     }
 
     public boolean shouldUseLastColumnOfDataset()

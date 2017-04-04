@@ -1,5 +1,7 @@
 package edu.byu.cstaheli.cs478.toolkit.utility;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -50,5 +52,12 @@ public class Utility
     public static double squaredDistance(double first, double second)
     {
         return square(first - second);
+    }
+
+    public static String getFormattedDouble(double value)
+    {
+        DecimalFormat format = new DecimalFormat("#.###");
+        format.setRoundingMode(RoundingMode.HALF_UP);
+        return format.format(value);
     }
 }
