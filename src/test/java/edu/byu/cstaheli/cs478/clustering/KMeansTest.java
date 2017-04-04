@@ -21,8 +21,34 @@ class KMeansTest
     @Test
     void cluster() throws Exception
     {
-        runBaseLineTest();
+//        runBaseLineTest();
 //        runVerificationTest();
+        runIrisTests();
+    }
+
+    private void runIrisTests() throws Exception
+    {
+        String[] args;
+        MLSystemManager manager = new MLSystemManager();
+        assertTrue(new File(datasetsLocation + "iris/without.csv").delete());
+        assertTrue(new File(datasetsLocation + "iris/with.csv").delete());
+        for (int k = 2; k < 8; ++k)
+        {
+            args = ("-L kmeans -A " + datasetsLocation + "iris.arff -E cluster " + k + " -V -N").split(" ");
+            KMeans kMeans = new KMeans(k, new Random());
+            kMeans.setUseFirstColumnOfDataset(true);
+            kMeans.setUseLastColumnOfDataset(false);
+            kMeans.setOutputFile(datasetsLocation + "iris/without.csv");
+            manager.setLearner(kMeans);
+            manager.run(args);
+
+            kMeans = new KMeans(k, new Random());
+            kMeans.setUseFirstColumnOfDataset(true);
+            kMeans.setUseLastColumnOfDataset(true);
+            kMeans.setOutputFile(datasetsLocation + "iris/with.csv");
+            manager.setLearner(kMeans);
+            manager.run(args);
+        }
     }
 
     private void runBaseLineTest() throws Exception

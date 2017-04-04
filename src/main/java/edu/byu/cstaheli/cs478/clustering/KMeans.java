@@ -32,6 +32,7 @@ public class KMeans extends UnsupervisedLearner
         bestSilhouetteMetric = 0;
         clusters = new ArrayList<>(0);
         useLastColumnOfDataset = true;
+        useFirstColumnOfDataset = true;
     }
 
     @NotNull
@@ -99,7 +100,7 @@ public class KMeans extends UnsupervisedLearner
         {
             try (FileWriter writer = new FileWriter(getOutputFile(), true))
             {
-                writer.append(String.format("%s\n", clusters.size()));
+                writer.append(String.format("***\n%s\n", clusters.size()));
                 for (Cluster cluster : clusters)
                 {
                     writer.append(cluster.getCentroidString(","));
