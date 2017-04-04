@@ -139,11 +139,23 @@ public class Cluster
     private double calculateArrayAverage(double[] columnValues)
     {
         double sum = 0;
+        int counter = 0;
         for (double value : columnValues)
         {
-            sum += value;
+            if (Double.compare(value, Matrix.MISSING) != 0)
+            {
+                sum += value;
+                ++counter;
+            }
         }
-        return sum / columnValues.length;
+        if (sum == 0)
+        {
+            return Matrix.MISSING;
+        }
+        else
+        {
+            return sum / counter;
+        }
     }
 
     private double calculateArrayMedian(double[] columnValues)
