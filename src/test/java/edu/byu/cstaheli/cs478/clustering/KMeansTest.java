@@ -23,7 +23,30 @@ class KMeansTest
     {
 //        runBaseLineTest();
 //        runVerificationTest();
-        runIrisTests();
+//        runIrisTests();
+        runAbaloneTests();
+    }
+
+    private void runAbaloneTests() throws Exception
+    {
+        String[] args;
+        MLSystemManager manager = new MLSystemManager();
+//        assertTrue(new File(datasetsLocation + "abalone/unnormalized.csv").delete());
+//        assertTrue(new File(datasetsLocation + "abalone/normalized.csv").delete());
+        for (int k = 2; k < 8; ++k)
+        {
+            args = ("-L kmeans -A " + datasetsLocation + "abalone.arff -E cluster " + k + " -V").split(" ");
+            KMeans kMeans = new KMeans(k, new Random());
+            kMeans.setOutputFile(datasetsLocation + "abalone/unnormalized.csv");
+            manager.setLearner(kMeans);
+            manager.run(args);
+
+            args = ("-L kmeans -A " + datasetsLocation + "abalone.arff -E cluster " + k + " -V -N").split(" ");
+            kMeans = new KMeans(k, new Random());
+            kMeans.setOutputFile(datasetsLocation + "abalone/normalized.csv");
+            manager.setLearner(kMeans);
+            manager.run(args);
+        }
     }
 
     private void runIrisTests() throws Exception
