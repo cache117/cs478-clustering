@@ -21,8 +21,8 @@ class KMeansTest
     @Test
     void cluster() throws Exception
     {
-//        runBaseLineTest();
-        runVerificationTest();
+        runBaseLineTest();
+//        runVerificationTest();
     }
 
     private void runBaseLineTest() throws Exception
@@ -30,6 +30,7 @@ class KMeansTest
         String[] args;
         MLSystemManager manager = new MLSystemManager();
         args = ("-L kmeans -A " + datasetsLocation + "sponge.arff -E cluster 4 -V").split(" ");
+        manager.run(args);
         KMeans kMeans = new KMeans(4, new Random());
         kMeans.setUseLastColumnOfDataset(true);
         kMeans.setUseFirstColumnOfDataset(true);

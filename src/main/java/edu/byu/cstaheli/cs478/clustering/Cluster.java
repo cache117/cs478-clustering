@@ -68,6 +68,8 @@ public class Cluster
             else if (isColumnContinuous(i))
             {
                 distance += euclideanDistance(firstValue, secondValue);
+                //Verification test uses squared distance, not euclidean
+//                distance += squaredDistance(firstValue, secondValue);
             }
             else
             {

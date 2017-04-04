@@ -99,16 +99,15 @@ public class KMeans extends UnsupervisedLearner
         {
             try (FileWriter writer = new FileWriter(getOutputFile(), true))
             {
-                writer.append(String.format("%s", clusters.size()));
+                writer.append(String.format("%s\n", clusters.size()));
                 for (Cluster cluster : clusters)
                 {
-                    writer.append(",,");
                     writer.append(cluster.getCentroidString(","));
-                    writer.append(",,");
+                    writer.append("\n");
                     writer.append(String.valueOf(cluster.size()));
-                    writer.append(",,");
+                    writer.append("\n");
                     writer.append(getFormattedDouble(cluster.calcSSE()));
-                    writer.append(",,");
+                    writer.append("\n");
                 }
                 writer.append(getFormattedDouble(calculateTotalSSE()))
                         .append("\n");
@@ -252,6 +251,7 @@ public class KMeans extends UnsupervisedLearner
             }
             silhouetteMetric += silhouetteMetric(internalDissimilarity, externalDissimilarity);
         }
+
         double difference = Math.abs(silhouetteMetric - bestSilhouetteMetric);
         if (silhouetteMetric > bestSilhouetteMetric)
         {
@@ -264,7 +264,7 @@ public class KMeans extends UnsupervisedLearner
                 return false;
             }
         }
-        return difference > .00001;
+        return bestSilhouetteMetric == 0 || difference > .00001;
     }
 
     public int getK()
