@@ -21,9 +21,12 @@ public class KMeans extends UnsupervisedLearner
     private Random random;
     private List<Cluster> clusters;
     private double bestSilhouetteMetric;
+    private double totalSilhouetteMetric;
     private int timesSilhouetteDecreased;
     private boolean useLastColumnOfDataset;
     private boolean useFirstColumnOfDataset;
+    private int iterations;
+    private double previousSSE;
 
     public KMeans(int k, Random random)
     {
@@ -77,20 +80,19 @@ public class KMeans extends UnsupervisedLearner
             clusters = populateInitialCentroids(dataset);
         }
         boolean keepTraining;
-        int counter = 0;
         do
         {
-            ++counter;
-            printIterationHeader(counter);
+            ++iterations;
+            printIterationHeader(iterations);
             printCentroids();
             clearClusters();
             addRowsToClusters(dataset);
             fixEmptyClusters(dataset);
             calculateNewCentroids();
             keepTraining = shouldKeepTraining();
-            printSilhouetteInfo();
             printSSE();
         } while (keepTraining);
+        printSilhouetteInfo();
         printFinalStats();
     }
 
@@ -122,7 +124,7 @@ public class KMeans extends UnsupervisedLearner
 
     private void printSSE()
     {
-        System.out.printf("SSE: %s", getFormattedDouble(calculateTotalSSE()));
+        System.out.printf("\nSSE: %s", getFormattedDouble(calculateTotalSSE()));
     }
 
     private double calculateTotalSSE()
@@ -154,7 +156,8 @@ public class KMeans extends UnsupervisedLearner
 
     private void printSilhouetteInfo()
     {
-        System.out.printf("\nSilhouette : %s\n", bestSilhouetteMetric);
+        totalSilhouetteMetric /= iterations;
+        System.out.printf("\nSilhouette: %s\n", totalSilhouetteMetric);
     }
 
     private void printCentroids()
@@ -252,8 +255,10 @@ public class KMeans extends UnsupervisedLearner
             }
             silhouetteMetric += silhouetteMetric(internalDissimilarity, externalDissimilarity);
         }
+        silhouetteMetric /= clusters.size();
 
         double difference = Math.abs(silhouetteMetric - bestSilhouetteMetric);
+        totalSilhouetteMetric += silhouetteMetric;
         if (silhouetteMetric > bestSilhouetteMetric)
         {
             bestSilhouetteMetric = silhouetteMetric;

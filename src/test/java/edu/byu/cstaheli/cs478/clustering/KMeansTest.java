@@ -31,24 +31,25 @@ class KMeansTest
     {
         String[] args;
         MLSystemManager manager = new MLSystemManager();
-        assertTrue(new File(datasetsLocation + "abalone/unnormalized.csv").delete());
-        assertTrue(new File(datasetsLocation + "abalone/normalized.csv").delete());
-        for (int k = 2; k < 8; ++k)
-        {
-            args = ("-L kmeans -A " + datasetsLocation + "abalone.arff -E cluster " + k + " -V").split(" ");
-            KMeans kMeans = new KMeans(k, new Random());
-            kMeans.setOutputFile(datasetsLocation + "abalone/unnormalized.csv");
-            kMeans.setUseLastColumnOfDataset(true);
-            manager.setLearner(kMeans);
-            manager.run(args);
-
-            args = ("-L kmeans -A " + datasetsLocation + "abalone.arff -E cluster " + k + " -V -N").split(" ");
-            kMeans = new KMeans(k, new Random());
-            kMeans.setOutputFile(datasetsLocation + "abalone/normalized.csv");
-            kMeans.setUseLastColumnOfDataset(true);
-            manager.setLearner(kMeans);
-            manager.run(args);
-        }
+//        assertTrue(new File(datasetsLocation + "abalone/unnormalized.csv").delete());
+//        assertTrue(new File(datasetsLocation + "abalone/normalized.csv").delete());
+//        for (int k = 2; k < 8; ++k)
+//        {
+//            args = ("-L kmeans -A " + datasetsLocation + "abalone.arff -E cluster " + k + " -V").split(" ");
+//            KMeans kMeans = new KMeans(k, new Random());
+//            kMeans.setOutputFile(datasetsLocation + "abalone/unnormalized.csv");
+//            kMeans.setUseLastColumnOfDataset(true);
+//            manager.setLearner(kMeans);
+//            manager.run(args);
+//
+//            args = ("-L kmeans -A " + datasetsLocation + "abalone.arff -E cluster " + k + " -V -N").split(" ");
+//            kMeans = new KMeans(k, new Random());
+//            kMeans.setOutputFile(datasetsLocation + "abalone/normalized.csv");
+//            kMeans.setUseLastColumnOfDataset(true);
+//            manager.setLearner(kMeans);
+//            manager.run(args);
+//        }
+        assertTrue(new File(datasetsLocation + "abalone/silhouette.csv").delete());
         for (int k = 2; k < 8; ++k)
         {
             args = ("-L kmeans -A " + datasetsLocation + "abalone.arff -E cluster " + k + " -V -N").split(" ");
